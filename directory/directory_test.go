@@ -1,6 +1,8 @@
 package directory
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestSearch(t *testing.T) {
 
@@ -28,16 +30,37 @@ func TestSearch(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	directory := Directory{}
-	//directory := make(Directory)
+	t.Run("new word", func(t *testing.T) {
+		directory := Directory{}
+		//directory := make(Directory)
 
-	key := "testAdd"
-	value := "this is another test."
+		key := "testAdd"
+		value := "this is another test."
 
-	directory.Add(key, value)
+		err := directory.Add(key, value)
 
-	assertDefinition(t, directory, key, value)
+		assertError(t, err, nil)
+		assertDefinition(t, directory, key, value)
+	})
 
+	t.Run("existing word", func(t *testing.T) {
+		key := "test"
+		value := "this is a test."
+		directory := Directory{key: value}
+
+		err := directory.Add(key, "existing test.")
+
+		assertError(t, err, ErrKeyExists)
+		assertDefinition(t, directory, key, value)
+	})
+}
+
+func assertError(t *testing.T, got, want error) {
+	t.Helper()
+
+	if got != want {
+		t.Fatalf("got error '%s' want error '%s'", got, want)
+	}
 }
 
 func assertStrings(t *testing.T, got, want string) {

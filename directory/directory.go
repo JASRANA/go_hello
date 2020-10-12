@@ -1,10 +1,18 @@
 package directory
 
-import "errors"
-
 type Directory map[string]string
 
-var ErrNotFound = errors.New("could not find the word you were looking for")
+const (
+	ErrNotFound = DictionaryErr("could not find the word you were looking for")
+	ErrKeyExists = DictionaryErr("key exists")
+)
+
+// 使错误更具有可读性
+type DictionaryErr string
+
+func (e DictionaryErr) Error() string {
+	return string(e)
+}
 
 // 可以同时返回很多值
 // map 是引用类型，不需要指针传递就可以修改数据
@@ -20,10 +28,17 @@ func (d Directory) Search(key string) (string,error) {
 	return definition, nil
 }
 
-func (d Directory) Add(key, value string) {
-	d[key] = value
-}
+func (d Directory) Add(key, value string) error {
+	_, err := d.Search(key)
 
-func Search(directory map[string]string, key string) string {
-	return directory[key]
+	switch err {
+	case ErrNotFound:
+		d[key] = value
+	case nil:
+		return ErrKeyExists
+	default:
+		return err
+	}
+
+	return nil
 }
