@@ -5,6 +5,7 @@ type Directory map[string]string
 const (
 	ErrNotFound = DictionaryErr("could not find the word you were looking for")
 	ErrKeyExists = DictionaryErr("key exists")
+	ErrWordDoesNotExist = DictionaryErr("cannot update word because it does not exist")
 )
 
 // 使错误更具有可读性
@@ -43,6 +44,17 @@ func (d Directory) Add(key, value string) error {
 	return nil
 }
 
-func (d Directory) Update(key, value string) {
-	d[key] = value
+func (d Directory) Update(key, value string) error {
+	_, err := d.Search(key)
+
+	switch err {
+	case nil:
+		d[key] = value
+	case ErrNotFound:
+		return ErrWordDoesNotExist
+	default:
+		return err
+	}
+
+	return nil
 }

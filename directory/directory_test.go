@@ -63,9 +63,20 @@ func TestUpdate(t *testing.T) {
 
 		updateValue := "update test."
 
-		directory.Update(key, updateValue)
+		err := directory.Update(key, updateValue)
 
+		assertError(t, err, nil)
 		assertDefinition(t, directory, key, updateValue)
+	})
+
+	t.Run("new word", func(t *testing.T) {
+		key := "test"
+		updateValue := "this is a test."
+		directory := Directory{}
+
+		err := directory.Update(key, updateValue)
+
+		assertError(t, err, ErrWordDoesNotExist)
 	})
 }
 
