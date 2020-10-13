@@ -42,3 +42,7 @@ func (d Directory) Add(key, value string) error {
 
 	return nil
 }
+
+func (d Directory) Update(key, value string) {
+	d[key] = value
+}

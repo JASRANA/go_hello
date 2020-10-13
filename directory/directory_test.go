@@ -55,6 +55,20 @@ func TestAdd(t *testing.T) {
 	})
 }
 
+func TestUpdate(t *testing.T) {
+	t.Run("existing word", func(t *testing.T) {
+		key := "test"
+		value := "this is a test."
+		directory := Directory{key: value}
+
+		updateValue := "update test."
+
+		directory.Update(key, updateValue)
+
+		assertDefinition(t, directory, key, updateValue)
+	})
+}
+
 func assertError(t *testing.T, got, want error) {
 	t.Helper()
 
