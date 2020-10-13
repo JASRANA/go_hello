@@ -58,3 +58,8 @@ func (d Directory) Update(key, value string) error {
 
 	return nil
 }
+
+// ★删除一个不存在的键是不影响的，不要复杂化 API
+func (d Directory) Delete(key string) {
+	delete(d, key)
+}

@@ -80,6 +80,17 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
+func TestDelete(t *testing.T) {
+	key := "test"
+	value := "this is a test."
+	directory := Directory{key: value}
+
+	directory.Delete(key)
+	_, err := directory.Search(key)
+
+	assertError(t, err, ErrNotFound)
+}
+
 func assertError(t *testing.T, got, want error) {
 	t.Helper()
 
