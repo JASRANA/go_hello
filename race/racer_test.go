@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-func TestRacer(t *testing.T) {
-	// 制作测试用 HTTP 服务器，通过控制请求返回时间达到测试目的
-	slowServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		// 先休眠 20 毫秒
-		time.Sleep(20 * time.Millisecond)
-		writer.WriteHeader(http.StatusOK)
-	}))
+const slowDelayTime = 20
+const fastDelayTime = 0
 
-	fastServer := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		writer.WriteHeader(http.StatusOK)
-	}))
+func TestRacer(t *testing.T) {
+	slowServer := makeDelayedServer(slowDelayTime)
+	fastServer := makeDelayedServer(fastDelayTime)
+
+	// 包裹 defer 的函数结束时调用后边的语句
+	// https://studygolang.gitbook.io/learn-go-with-tests/go-ji-chu/select#defer
+	defer slowServer.Close()
+	defer fastServer.Close()
 
 	slowURL := slowServer.URL
 	fastURL := fastServer.URL
@@ -29,6 +29,11 @@ func TestRacer(t *testing.T) {
 		t.Errorf("got '%s' want '%s'", got, want)
 	}
 
-	slowServer.Close()
-	fastServer.Close()
+}
+
+func makeDelayedServer(delay time.Duration) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		time.Sleep(delay * time.Millisecond)
+		writer.WriteHeader(http.StatusOK)
+	}))
 }
