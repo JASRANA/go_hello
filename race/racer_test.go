@@ -28,20 +28,35 @@ func TestRacer(t *testing.T) {
 	//	}
 	//})
 
-	t.Run("超过 10s，报错", func(t *testing.T) {
-		slowServer := makeDelayedServer(11 * time.Second)
-		fastServer := makeDelayedServer(12 * time.Second)
+	// 问题引入：每次执行都需要 10s，可以使用 mock
+	//t.Run("超过 10s，报错", func(t *testing.T) {
+	//	slowServer := makeDelayedServer(11 * time.Second)
+	//	fastServer := makeDelayedServer(12 * time.Second)
+	//
+	//	defer slowServer.Close()
+	//	defer fastServer.Close()
+	//
+	//	slowURL := slowServer.URL
+	//	fastURL := fastServer.URL
+	//
+	//	_, err := Racer(slowURL, fastURL)
+	//
+	//	if err == nil {
+	//		t.Fatal("expected an error but got nil.")
+	//	}
+	//})
 
-		defer slowServer.Close()
-		defer fastServer.Close()
+	t.Run("超时报错即可，不关心超时时间", func(t *testing.T) {
+		server := makeDelayedServer(25 * time.Millisecond)
 
-		slowURL := slowServer.URL
-		fastURL := fastServer.URL
+		defer server.Close()
 
-		_, err := Racer(slowURL, fastURL)
+		url := server.URL
+
+		_, err := ConfigurableRacer(url, url, 20 * time.Millisecond)
 
 		if err == nil {
-			t.Fatal("expected an error but got nil.")
+			t.Error("expected an error but didn't get one")
 		}
 	})
 }
