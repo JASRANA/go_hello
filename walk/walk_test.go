@@ -1,22 +1,36 @@
 package walk
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestWalk(t *testing.T) {
-
-	expected := "Chris"
-	var got []string
-
-	x := struct {
+	// 可以使用多种情况进行测试
+	cases := []struct{
 		Name string
-	}{expected}
+		Input interface{}
+		ExpectedCalls []string
+	} {
+		{
+			"Struct with one string field",
+			struct {
+				Name string
+			}{"Chris"},
+			[]string{"Chris"},
+		},
+	}
 
-	walk(x, func(input string) {
-		got = append(got, input)
-	})
+	for _, test := range cases {
+		t.Run(test.Name, func(t *testing.T) {
+			var got []string
+			walk(test.Input, func(input string) {
+				got = append(got, input)
+			})
 
-	// 判断值是否相等
-	if got[0] != expected {
-		t.Errorf("got '%s' want '%s'", got[0], expected)
+			if !reflect.DeepEqual(got, test.ExpectedCalls) {
+				t.Errorf("got %v want %v", got, test.ExpectedCalls)
+			}
+		})
 	}
 }
