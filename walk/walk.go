@@ -11,5 +11,9 @@ func walk(x interface{}, fn func(input string))  {
 		if field.Kind() == reflect.String {
 			fn(field.String())
 		}
+		// 如果是嵌套，则递归调用
+		if field.Kind() == reflect.Struct {
+			walk(field.Interface(), fn)
+		}
 	}
 }
