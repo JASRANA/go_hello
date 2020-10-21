@@ -15,8 +15,8 @@ func TestWalk(t *testing.T) {
 		got = append(got, input)
 	})
 
-	// 只是简单地判断 fn() 是否被调用
-	if len(got) != 1 {
-		t.Errorf("wrong number of function calls, got %d want %d", len(got), 1)
+	// 判断值是否相等
+	if got[0] != expected {
+		t.Errorf("got '%s' want '%s'", got[0], expected)
 	}
 }
