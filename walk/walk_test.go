@@ -5,6 +5,16 @@ import (
 	"testing"
 )
 
+type Person struct {
+	Name string
+	Profile Profile
+}
+
+type Profile struct {
+	Age int
+	City string
+}
+
 func TestWalk(t *testing.T) {
 	// 可以使用多种情况进行测试
 	cases := []struct{
@@ -37,16 +47,7 @@ func TestWalk(t *testing.T) {
 		},
 		{
 			"Nested fields",
-			struct {
-				Name string
-				Profile struct{
-					Age int
-					City string
-				}
-			}{"Chris", struct {
-				Age int
-				City string
-			}{33, "China"}},
+			Person{ "Chris", Profile{33, "China"}},
 			[]string{"Chris", "China"},
 		},
 	}
